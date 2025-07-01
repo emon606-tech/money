@@ -9,12 +9,12 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Get token from environment
+// Get GitHub token from environment variable
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 if (!GITHUB_TOKEN) {
   console.error("❌ ERROR: GITHUB_TOKEN environment variable is not set!");
-  process.exit(1);
+  process.exit(1); // Stop app immediately
 }
 
 const OWNER = "emonxxx11";
@@ -25,11 +25,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/random', async (req, res) => {
   try {
+    // 1. Generate the random number
     const randomNumber = Math.floor(Math.random() * 90000) + 10000;
     const content = `private static string number = "${randomNumber}";`;
 
+    // 2. GitHub API URL to get file info
     const apiUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
 
+    // 3. Get current file SHA from GitHub (needed for update)
     const { data } = await axios.get(apiUrl, {
       headers: {
         Authorization: `token ${GITHUB_TOKEN}`,
@@ -39,6 +42,7 @@ app.get('/random', async (req, res) => {
 
     const sha = data.sha;
 
+    // 4. Update file content on GitHub with new random number
     await axios.put(apiUrl, {
       message: `Auto-update number to ${randomNumber}`,
       content: Buffer.from(content).toString('base64'),
@@ -50,6 +54,7 @@ app.get('/random', async (req, res) => {
       }
     });
 
+    // 5. Respond success
     res.json({ success: true, number: randomNumber });
 
   } catch (error) {
