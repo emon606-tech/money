@@ -16,7 +16,7 @@ const REPO = "MONYE";          // ✅ Your repository name
 const FILE_PATH = "CODE.txt";  // ✅ File must already exist in the repo
 
 // ⚠️ HARD-CODED GitHub token (for testing only)
-const GITHUB_TOKEN = "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";  // ⛔ Replace this with your real token
+const GITHUB_TOKEN = "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";  // ⛔ Replace this with your real token
 
 app.use(express.static(path.join(__dirname, 'public')));
 
