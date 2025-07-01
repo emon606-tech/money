@@ -3,20 +3,20 @@ import axios from 'axios';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Setup for __dirname in ES module
+// Setup __dirname in ES modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// GitHub config
-const OWNER = "emonxxx11";     // ✅ Your GitHub username
-const REPO = "MONYE";          // ✅ Your repository name
-const FILE_PATH = "CODE.txt";  // ✅ File must already exist in the repo
+// Your GitHub info
+const OWNER = "emonxxx11";
+const REPO = "MONYE";
+const FILE_PATH = "CODE.txt";
 
-// ⚠️ HARD-CODED GitHub token (for testing only)
-const GITHUB_TOKEN = "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";  // ⛔ Replace this with your real token
+// ⚠️ For testing, hardcoded token. Replace with env var in production.
+const GITHUB_TOKEN = "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";
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -37,7 +37,7 @@ app.get('/random', async (req, res) => {
 
     const sha = data.sha;
 
-    // 2. Update the file content
+    // 2. Update the file content with new number
     await axios.put(apiUrl, {
       message: `Auto-update number to ${randomNumber}`,
       content: Buffer.from(content).toString('base64'),
@@ -59,5 +59,5 @@ app.get('/random', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`✅ Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
