@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Random Number Uploader</title>
+  <title>Random Number Generator</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding-top: 100px; }
-    #output { font-size: 2rem; margin-bottom: 1em; }
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
+    #output { font-size: 2rem; margin-bottom: 20px; }
     button { padding: 10px 20px; font-size: 1rem; }
     .error { color: red; }
   </style>
@@ -14,32 +14,29 @@
   <h1>🎲 Random Number Generator</h1>
   <div id="output">Loading...</div>
   <div id="error" class="error"></div>
-  <button onclick="getRandom()">Generate New Number</button>
+  <button onclick="generateNumber()">Generate New Number</button>
 
   <script>
-    async function getRandom() {
-      const out = document.getElementById('output');
-      const err = document.getElementById('error');
-      out.textContent = "Loading...";
-      err.textContent = "";
-
+    async function generateNumber() {
+      document.getElementById('output').textContent = 'Generating...';
+      document.getElementById('error').textContent = '';
       try {
         const res = await fetch('/random');
         const data = await res.json();
-
         if (data.success) {
-          out.textContent = `Random Number: ${data.number}`;
+          document.getElementById('output').textContent = `Random Number: ${data.number}`;
         } else {
-          out.textContent = "⚠️ Failed!";
-          err.textContent = data.error || "Unknown error";
+          document.getElementById('output').textContent = 'Failed!';
+          document.getElementById('error').textContent = data.error || 'Unknown error';
         }
       } catch (e) {
-        out.textContent = "❌ Error!";
-        err.textContent = e.message;
+        document.getElementById('output').textContent = 'Error!';
+        document.getElementById('error').textContent = e.message;
       }
     }
 
-    getRandom(); // run on page load
+    // Generate on page load
+    generateNumber();
   </script>
 </body>
 </html>
