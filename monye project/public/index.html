@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Random Number Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 100px;
+      background-color: #f4f4f4;
+    }
+    h1 {
+      font-size: 2.5rem;
+      color: #333;
+    }
+    #number {
+      font-size: 4rem;
+      color: #007BFF;
+      margin-top: 20px;
+    }
+    .loader {
+      border: 8px solid #f3f3f3;
+      border-top: 8px solid #007BFF;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      margin: 40px auto;
+      animation: spin 1s linear infinite;
+      display: none;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <h1>Random Number:</h1>
+  <div class="loader" id="loader"></div>
+  <h2 id="number">Loading...</h2>
+
+  <script>
+    const backendURL = window.location.origin; // Assumes backend & frontend on same domain
+
+    document.getElementById("loader").style.display = "block";
+    fetch(backendURL + '/random')
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("number").innerText = data.number;
+      })
+      .catch(error => {
+        document.getElementById("loader").style.display = "none";
+        document.getElementById("number").innerText = "Error loading number.";
+        console.error('Error:', error);
+      });
+  </script>
+</body>
+</html>
