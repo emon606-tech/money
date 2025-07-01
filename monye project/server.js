@@ -1,40 +1,49 @@
 const express = require('express');
+const fs = require('fs');
+const path = require('path');
 const axios = require('axios');
+
 const app = express();
-const PORT = process.env.PORT || 3000;
-
-const GITHUB_TOKEN = process.env.GITHUB_TOKEN; // Set this in Railway env variables
-const REPO = 'MONYE';                         // Your GitHub repo name
-const OWNER = 'your-github-username';        // Your GitHub username
-const FILE_PATH = 'CODE.txt';                  // File to update in repo
-
 app.use(express.static('public'));
 
+const PORT = process.env.PORT || 8080;
+
+// === SET YOUR INFO HERE ===
+const OWNER = "your-github-username"; // change this
+const REPO = "WEBSERVER-MONEY";       // your repo name
+const FILE_PATH = "CODE.txt";         // file to update
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+
 app.get('/random', async (req, res) => {
-    const number = Math.floor(1000 + Math.random() * 90000).toString();
-    const content = `private static string number = "${number}";`;
-    const base64Content = Buffer.from(content).toString('base64');
+    const randomNumber = Math.floor(Math.random() * 90000) + 10000;
+
+    const content = `private static string number = "${randomNumber}";`;
+
+    const githubApiUrl = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`;
 
     try {
-        // Get existing file to get SHA
-        const { data } = await axios.get(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
-            headers: { Authorization: `token ${GITHUB_TOKEN}` }
+        const getResponse = await axios.get(githubApiUrl, {
+            headers: {
+                Authorization: `token ${GITHUB_TOKEN}`,
+            }
         });
 
-        // Update CODE.txt file in repo
-        await axios.put(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE_PATH}`, {
-            message: `Update random number: ${number}`,
-            content: base64Content,
-            sha: data.sha
+        const sha = getResponse.data.sha;
+
+        await axios.put(githubApiUrl, {
+            message: "Update random number",
+            content: Buffer.from(content).toString('base64'),
+            sha: sha
         }, {
-            headers: { Authorization: `token ${GITHUB_TOKEN}` }
+            headers: {
+                Authorization: `token ${GITHUB_TOKEN}`,
+            }
         });
 
-        res.json({ number });
-
+        res.send(`Random Number: ${randomNumber}`);
     } catch (err) {
-        console.error('GitHub update error:', err.message);
-        res.status(500).json({ error: 'Failed to update GitHub file' });
+        console.error(err.message);
+        res.send("Something went wrong!");
     }
 });
 
