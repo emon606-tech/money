@@ -2,46 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Random Number Generator</title>
+  <title>Random Number Uploader</title>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; margin-top: 100px; }
-    #number { font-size: 3rem; margin-bottom: 20px; }
-    #error { color: red; }
-    button { font-size: 1.2rem; padding: 10px 20px; cursor: pointer; }
+    body { font-family: Arial, sans-serif; text-align: center; padding-top: 100px; }
+    #output { font-size: 2rem; margin-bottom: 1em; }
+    button { padding: 10px 20px; font-size: 1rem; }
+    .error { color: red; }
   </style>
 </head>
 <body>
-  <h1 id="number">Loading...</h1>
-  <div id="error"></div>
-  <button id="refreshBtn">Generate New Number</button>
+  <h1>🎲 Random Number Generator</h1>
+  <div id="output">Loading...</div>
+  <div id="error" class="error"></div>
+  <button onclick="getRandom()">Generate New Number</button>
 
   <script>
-    const numberEl = document.getElementById('number');
-    const errorEl = document.getElementById('error');
-    const btn = document.getElementById('refreshBtn');
+    async function getRandom() {
+      const out = document.getElementById('output');
+      const err = document.getElementById('error');
+      out.textContent = "Loading...";
+      err.textContent = "";
 
-    async function fetchNumber() {
-      errorEl.textContent = "";
-      numberEl.textContent = "Loading...";
       try {
         const res = await fetch('/random');
-        if (!res.ok) {
-          const errorData = await res.json();
-          throw new Error(errorData.error || 'Unknown error');
-        }
         const data = await res.json();
-        numberEl.textContent = `Random Number: ${data.number}`;
-      } catch (err) {
-        numberEl.textContent = "Failed to load number";
-        errorEl.textContent = err.message;
-        console.error(err);
+
+        if (data.success) {
+          out.textContent = `Random Number: ${data.number}`;
+        } else {
+          out.textContent = "⚠️ Failed!";
+          err.textContent = data.error || "Unknown error";
+        }
+      } catch (e) {
+        out.textContent = "❌ Error!";
+        err.textContent = e.message;
       }
     }
 
-    btn.addEventListener('click', fetchNumber);
-
-    // Load on page load
-    fetchNumber();
+    getRandom(); // run on page load
   </script>
 </body>
 </html>
